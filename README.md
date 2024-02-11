@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The Housing Bill Management System is a web application designed to manage bills and apartment information in a housing complex. The system allows administrators to create, update, and delete bills, manage apartment details, and assign bills to apartments.
+The Housing Bill Management System is a web application designed to manage bills and apartment information in a housing complex. The system allows administrators to create, update, and delete users, bills, manage apartment details, and assign bills to apartments.
 
 ## Features
 
@@ -27,8 +27,9 @@ The Housing Bill Management System is a web application designed to manage bills
 - **Microsoft.Extensions.Identity.Stores**: Extended functionalities for Identity stores.
 - **Microsoft.IdentityModel.Tokens**: Library for handling JWT authentication tokens.
 - **Swashbuckle.AspNetCore**: Adds Swagger/OpenAPI functionality to the project for API documentation.
-- **AutoMapper.Extensions.Microsoft.DependencyInjection**: Simplifies object-to-object mapping.
-- **Microsoft.AspNetCore.Mvc.NewtonsoftJson**: Allows the use of Newtonsoft.Json as the JSON serializer for ASP.NET Core.
+
+## Status
+- Still in development
 
 ## Getting Started
 
