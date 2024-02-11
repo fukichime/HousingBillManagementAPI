@@ -23,6 +23,7 @@ namespace HousingBillManagement.API.Controllers
         }
 
         [AllowAnonymous]
+        [Authorize(Roles = "admin")]
         [HttpPost("Register")]
         public async Task<IActionResult> Register([FromBody] UserRegistrationDto registRequest)
         {
@@ -64,7 +65,7 @@ namespace HousingBillManagement.API.Controllers
                 }
             }
 
-            var token = await _tokenService.GenerateToken(registRequest.TCNo, registRequest.PhoneNumber, registRequest.Password);
+            var token = await _tokenService.GenerateToken(null, registRequest.TCNo, registRequest.PhoneNumber, registRequest.Password);
 
             return Ok(new { Token = token });
         }
@@ -94,13 +95,77 @@ namespace HousingBillManagement.API.Controllers
                 }
 
                 var isAdmin = await _userManager.IsInRoleAsync(user, "admin");
-                var token = await _tokenService.GenerateToken(loginRequest.TCNo, loginRequest.PhoneNumber, loginRequest.Password);
+                var token = await _tokenService.GenerateToken(null, loginRequest.TCNo, loginRequest.PhoneNumber, loginRequest.Password);
 
                 return Ok(new { Token = token, IsAdmin = isAdmin });
             }
             catch (Exception ex)
             {
                 return Unauthorized(new { message = ex.Message });
+            }
+        }
+
+        [Authorize(Roles = "admin")]
+        [HttpPut("UpdateUser")]
+        public async Task<IActionResult> UpdateUser([FromBody] UserUpdateDto updateDto)
+        {
+            try
+            {
+                var user = await _userManager.FindByNameAsync(updateDto.UserName);
+
+                if (user == null)
+                {
+                    return NotFound("User not found.");
+                }
+                user.FullName = updateDto.FullName;
+                user.TCNo = updateDto.TCNo;
+                user.PhoneNumber = updateDto.PhoneNumber;
+                user.Email = updateDto.Email;
+
+                var result = await _userManager.UpdateAsync(user);
+
+                if (result.Succeeded)
+                {
+                    return Ok("User updated successfully.");
+                }
+                else
+                {
+                    return BadRequest(result.Errors);
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+        [Authorize(Roles = "admin")]
+        [HttpDelete("DeleteUser")]
+        public async Task<IActionResult> DeleteUser([FromBody] UserDeleteDto deleteDto)
+        {
+            try
+            {
+                var user = await _userManager.FindByNameAsync(deleteDto.UserName);
+
+                if (user == null)
+                {
+                    return NotFound("User not found.");
+                }
+
+                var result = await _userManager.DeleteAsync(user);
+
+                if (result.Succeeded)
+                {
+                    return Ok("User deleted successfully.");
+                }
+                else
+                {
+                    return BadRequest(result.Errors);
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
             }
         }
     }

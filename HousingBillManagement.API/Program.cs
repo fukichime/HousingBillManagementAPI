@@ -14,8 +14,6 @@ builder.Services.AddScoped<TokenService>();
 // Add services to the container. addscoped services will be here
 
 builder.Services.AddControllers();
-
-
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -31,8 +29,7 @@ builder.Services.AddIdentity<User, UserRole>(options =>
     options.Password.RequireDigit = false;
     options.Password.RequireLowercase = false;
     options.Password.RequireNonAlphanumeric = false;
-}).AddEntityFrameworkStores<AppDbContext>().AddRoles<IdentityRole>()
-    .AddDefaultTokenProviders();
+}).AddEntityFrameworkStores<AppDbContext>();
 
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var key = Encoding.ASCII.GetBytes(jwtSettings.GetValue<string>("Key"));
@@ -59,6 +56,7 @@ builder.Services.AddAuthentication(options =>
 });
 
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

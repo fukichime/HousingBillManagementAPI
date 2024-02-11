@@ -18,15 +18,24 @@ namespace HousingBillManagement.API.Services
             _userManager = userManager;
         }
 
-        public async Task<string> GenerateToken(string tcNo, string phoneNumber, string password)
+        public async Task<string> GenerateToken(string? username, string? tcNo, string? phoneNumber, string password)
         {
-            var tcNoOrPhoneNumber = $"{tcNo}-{phoneNumber}";
+            if (string.IsNullOrEmpty(username) && string.IsNullOrEmpty(tcNo) && string.IsNullOrEmpty(phoneNumber))
+            {
+                throw new ArgumentException("At least one of the inputs must be provided.");
+            }
 
-            var user = await _userManager.FindByNameAsync(tcNoOrPhoneNumber) ?? await _userManager.FindByEmailAsync(tcNoOrPhoneNumber);
+            var user = username != null
+                ? await _userManager.FindByNameAsync(username)
+                : tcNo != null
+                    ? await _userManager.FindByLoginAsync("TCNo", tcNo)
+                    : phoneNumber != null
+                        ? await _userManager.FindByLoginAsync("PhoneNumber", phoneNumber)
+                        : null;
 
             if (user == null || !await _userManager.CheckPasswordAsync(user, password))
             {
-                throw new Exception("Invalid TCNo, PhoneNumber, or password.");
+                throw new Exception("Invalid");
             }
 
             var jwtSettings = _configuration.GetSection("Jwt");
@@ -44,7 +53,6 @@ namespace HousingBillManagement.API.Services
 
         };
 
-            // Add user role claims if applicable
             var roles = await _userManager.GetRolesAsync(user);
             foreach (var role in roles)
             {

@@ -9,5 +9,6 @@
         public int Floor { get; set; }
         public int Number { get; set; }
         public bool areTheyOwner { get; set; }
+        public User AssignedUser { get; set; }
     }
 }
